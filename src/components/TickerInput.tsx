@@ -46,7 +46,6 @@ export function TickerInput({ tickers, onChange, disabled }: TickerInputProps) {
       <label className="text-sm font-medium text-foreground flex items-center gap-2">
         <TrendingUp className="h-4 w-4 text-primary" />
         Stock Tickers
-        <span className="text-muted-foreground font-normal">({tickers.length}/5)</span>
       </label>
 
       <div className="glass-strong rounded-lg p-3 focus-within:ring-1 focus-within:ring-primary/50 transition-all">
