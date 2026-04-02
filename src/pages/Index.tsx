@@ -70,7 +70,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-lg font-bold tracking-tight text-foreground">
-                  StockInsight<span className="gradient-text">AI</span>
+                  Predictiv<span className="gradient-text">Trend</span>
                 </h1>
               </div>
             </div>
