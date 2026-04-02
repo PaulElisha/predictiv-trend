@@ -32,7 +32,10 @@ export function ReportDisplay({ content, isStreaming, error, hasStarted }: Repor
           <AlertCircle className="h-5 w-5" />
           <p className="text-sm font-medium">Analysis Error</p>
         </div>
-        <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          The AI service is temporarily unavailable. This is a server-side issue — please try again in a moment.
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground/60 font-mono">{error}</p>
       </div>
     );
   }
