@@ -1,4 +1,4 @@
-const API_URL = "https://stock-predictions-ai.vercel.app/";
+const API_URL = "https://stock-predictions-ai.vercel.app/api/generate-stock-report";
 
 export interface StockReportParams {
   tickersArr: string[];
