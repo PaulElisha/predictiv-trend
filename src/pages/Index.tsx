@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { format } from "date-fns";
-import { Zap, BarChart3, Activity, StopCircle } from "lucide-react";
+import { Zap, BarChart3, Activity, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TickerInput } from "@/components/TickerInput";
 import { DateRangeSelector } from "@/components/DateRangeSelector";
@@ -119,14 +119,23 @@ const Index = () => {
                 <div className="h-px bg-border/50" />
 
                 {isStreaming ? (
-                  <Button
-                    variant="destructive"
-                    className="w-full h-12 text-sm font-semibold"
-                    onClick={handleStop}
-                  >
-                    <StopCircle className="h-4 w-4 mr-2" />
-                    Stop Generation
-                  </Button>
+                  <div className="flex gap-2 w-full">
+                    <Button
+                      variant="glow"
+                      className="flex-1 h-12 text-sm font-semibold pointer-events-none"
+                      disabled
+                    >
+                      <div className="h-4 w-4 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                      Generating...
+                    </Button>
+                    <button
+                      onClick={handleStop}
+                      className="h-12 w-12 rounded-lg border border-border/50 bg-secondary/50 hover:bg-secondary flex items-center justify-center transition-colors"
+                      title="Stop generation"
+                    >
+                      <Square className="h-3.5 w-3.5 text-foreground fill-foreground" />
+                    </button>
+                  </div>
                 ) : (
                   <Button
                     variant="glow"
