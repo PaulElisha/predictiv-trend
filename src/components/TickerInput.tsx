@@ -17,7 +17,7 @@ export function TickerInput({ tickers, onChange, disabled }: TickerInputProps) {
   const addTicker = useCallback(
     (ticker: string) => {
       const clean = ticker.toUpperCase().trim();
-      if (clean && !tickers.includes(clean) && tickers.length < 5) {
+      if (clean && !tickers.includes(clean)) {
         onChange([...tickers, clean]);
       }
       setInputValue("");
@@ -46,7 +46,6 @@ export function TickerInput({ tickers, onChange, disabled }: TickerInputProps) {
       <label className="text-sm font-medium text-foreground flex items-center gap-2">
         <TrendingUp className="h-4 w-4 text-primary" />
         Stock Tickers
-        <span className="text-muted-foreground font-normal">({tickers.length}/5)</span>
       </label>
 
       <div className="glass-strong rounded-lg p-3 focus-within:ring-1 focus-within:ring-primary/50 transition-all">
@@ -75,12 +74,12 @@ export function TickerInput({ tickers, onChange, disabled }: TickerInputProps) {
           onChange={(e) => setInputValue(e.target.value.toUpperCase())}
           onKeyDown={handleKeyDown}
           placeholder={tickers.length === 0 ? "Type a ticker (e.g., AAPL) and press Enter" : "Add another ticker..."}
-          disabled={disabled || tickers.length >= 5}
+          disabled={disabled}
           className="border-0 bg-transparent p-0 h-8 text-sm font-mono focus-visible:ring-0 placeholder:text-muted-foreground/50"
         />
       </div>
 
-      {tickers.length < 5 && !disabled && (
+      {!disabled && (
         <div className="flex flex-wrap gap-1.5">
           {suggestedTickers.slice(0, 6).map((ticker) => (
             <button
