@@ -1,6 +1,6 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Brain, Loader2, AlertCircle, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 interface ReportDisplayProps {
   content: string;
