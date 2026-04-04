@@ -1,6 +1,6 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Brain, Loader2, AlertCircle, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 interface ReportDisplayProps {
   content: string;
@@ -79,14 +79,24 @@ export function ReportDisplay({ content, isStreaming, error, hasStarted }: Repor
         )}
       </div>
 
-      <div ref={scrollRef} className="p-5 max-h-[60vh] overflow-y-auto">
-        <div className="prose prose-invert prose-sm max-w-none">
-          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90 bg-transparent p-0 m-0 border-0">
-            {content}
-            {isStreaming && (
-              <span className="inline-block w-2 h-4 bg-primary ml-0.5 animate-pulse-glow rounded-sm" />
-            )}
-          </pre>
+      <div ref={scrollRef} className="p-6 max-h-[60vh] overflow-y-auto">
+        <div className="prose prose-invert prose-sm max-w-none
+          prose-headings:text-foreground prose-headings:font-semibold prose-headings:tracking-tight
+          prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-3 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border/40
+          prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
+          prose-p:text-foreground/85 prose-p:leading-relaxed prose-p:mb-3
+          prose-strong:text-primary prose-strong:font-semibold
+          prose-em:text-muted-foreground prose-em:italic
+          prose-hr:border-border/40 prose-hr:my-5
+          prose-li:text-foreground/85 prose-li:marker:text-primary
+          prose-ol:pl-4 prose-ul:pl-4
+          prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-mono-code
+          prose-blockquote:border-primary/40 prose-blockquote:text-muted-foreground
+        ">
+          <ReactMarkdown>{content}</ReactMarkdown>
+          {isStreaming && (
+            <span className="inline-block w-2 h-4 bg-primary ml-0.5 animate-pulse-glow rounded-sm" />
+          )}
         </div>
       </div>
     </div>
