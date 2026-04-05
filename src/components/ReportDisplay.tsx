@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState, memo, useMemo } from "react";
+import { useRef, useEffect, useState, memo, useMemo, lazy, Suspense } from "react";
 import { Brain, Loader2, AlertCircle, Copy, Check } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+
+const ReactMarkdown = lazy(() => import("react-markdown"));
 
 interface ReportDisplayProps {
   content: string;
@@ -19,7 +20,6 @@ export const ReportDisplay = memo(function ReportDisplay({
   const [copied, setCopied] = useState(false);
   const isAutoScrolling = useRef(true);
 
-  // Only auto-scroll if user hasn't scrolled up
   useEffect(() => {
     const el = scrollRef.current;
     if (el && isAutoScrolling.current) {
@@ -40,8 +40,14 @@ export const ReportDisplay = memo(function ReportDisplay({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Memoize markdown rendering — only re-render when content changes
-  const renderedMarkdown = useMemo(() => <ReactMarkdown>{content}</ReactMarkdown>, [content]);
+  const renderedMarkdown = useMemo(
+    () => (
+      <Suspense fallback={<div className="text-muted-foreground text-sm">Loading...</div>}>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </Suspense>
+    ),
+    [content],
+  );
 
   if (error) {
     return (
@@ -51,7 +57,7 @@ export const ReportDisplay = memo(function ReportDisplay({
           <p className="text-sm font-medium">Analysis Error</p>
         </div>
         <p className="mt-2 text-sm text-muted-foreground">
-          The AI service is temporarily unavailable. This is a server-side issue — please try again in a moment.
+          The AI service is temporarily unavailable. Please try again in a moment.
         </p>
         <p className="mt-1 text-xs text-muted-foreground/60 font-mono">{error}</p>
       </div>
