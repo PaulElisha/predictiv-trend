@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, memo, useMemo } from "react";
 import { Brain, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -9,21 +9,39 @@ interface ReportDisplayProps {
   hasStarted: boolean;
 }
 
-export function ReportDisplay({ content, isStreaming, error, hasStarted }: ReportDisplayProps) {
+export const ReportDisplay = memo(function ReportDisplay({
+  content,
+  isStreaming,
+  error,
+  hasStarted,
+}: ReportDisplayProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const isAutoScrolling = useRef(true);
 
+  // Only auto-scroll if user hasn't scrolled up
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const el = scrollRef.current;
+    if (el && isAutoScrolling.current) {
+      el.scrollTop = el.scrollHeight;
     }
   }, [content]);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+    isAutoScrolling.current = atBottom;
+  };
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Memoize markdown rendering — only re-render when content changes
+  const renderedMarkdown = useMemo(() => <ReactMarkdown>{content}</ReactMarkdown>, [content]);
 
   if (error) {
     return (
@@ -79,7 +97,11 @@ export function ReportDisplay({ content, isStreaming, error, hasStarted }: Repor
         )}
       </div>
 
-      <div ref={scrollRef} className="p-6 max-h-[60vh] overflow-y-auto">
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="p-6 max-h-[60vh] overflow-y-auto"
+      >
         <div className="prose prose-invert prose-sm max-w-none
           prose-headings:text-foreground prose-headings:font-semibold prose-headings:tracking-tight
           prose-h2:text-lg prose-h2:mt-6 prose-h2:mb-3 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border/40
@@ -93,7 +115,7 @@ export function ReportDisplay({ content, isStreaming, error, hasStarted }: Repor
           prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-mono-code
           prose-blockquote:border-primary/40 prose-blockquote:text-muted-foreground
         ">
-          <ReactMarkdown>{content}</ReactMarkdown>
+          {renderedMarkdown}
           {isStreaming && (
             <span className="inline-block w-2 h-4 bg-primary ml-0.5 animate-pulse-glow rounded-sm" />
           )}
@@ -101,4 +123,4 @@ export function ReportDisplay({ content, isStreaming, error, hasStarted }: Repor
       </div>
     </div>
   );
-}
+});

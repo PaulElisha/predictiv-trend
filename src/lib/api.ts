@@ -1,5 +1,3 @@
-/** @format */
-
 const API_URL = "https://predictive-trend-api.onrender.com/api/generate-stock-report";
 
 export interface StockReportParams {
@@ -38,25 +36,46 @@ export async function streamStockReport(
     }
 
     const decoder = new TextDecoder();
+    let buffer = "";
+    let batchBuffer = "";
+    let rafId: number | null = null;
+
+    const flush = () => {
+      if (batchBuffer) {
+        onToken(batchBuffer);
+        batchBuffer = "";
+      }
+      rafId = null;
+    };
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n\n");
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
 
-      for (const line of lines) {
-        if (line.startsWith("data: ")) {
+      for (const part of parts) {
+        if (part.startsWith("data: ")) {
           try {
-            const token = JSON.parse(line.slice(6));
-            onToken(token);
+            const token = JSON.parse(part.slice(6));
+            batchBuffer += token;
           } catch {
             continue;
           }
         }
       }
+
+      // Batch DOM updates to animation frames for smooth rendering
+      if (batchBuffer && rafId === null) {
+        rafId = requestAnimationFrame(flush);
+      }
     }
+
+    // Flush any remaining tokens
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    flush();
 
     onDone();
   } catch (err: any) {
