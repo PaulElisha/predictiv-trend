@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { format, subDays, subMonths, subYears } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -39,15 +39,17 @@ export function DateRangeSelector({
     setActivePreset(label);
   };
 
-  // Set default 3M on mount if no dates
-  if (!startDate && !endDate) {
-    const end = new Date();
-    const start = subDays(end, 90);
-    setTimeout(() => {
+  // Set default 3M on mount
+  const initialized = useRef(false);
+  useEffect(() => {
+    if (!initialized.current && !startDate && !endDate) {
+      initialized.current = true;
+      const end = new Date();
+      const start = subDays(end, 90);
       onStartDateChange(start);
       onEndDateChange(end);
-    }, 0);
-  }
+    }
+  }, []);
 
   return (
     <div className="space-y-3">
