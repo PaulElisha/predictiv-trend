@@ -42,6 +42,9 @@ const Index = () => {
       (err) => {
         setError(err);
         setIsStreaming(false);
+        toast.error("Stream error", {
+          description: err,
+        });
       },
       abortRef.current.signal,
     );
