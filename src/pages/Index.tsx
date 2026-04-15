@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { Zap, BarChart3, Activity, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -88,8 +88,16 @@ export async function streamStockReport(
                 return;
               }
               try {
-                const token = JSON.parse(payload);
-                batchBuffer += token;
+                const parsed = JSON.parse(payload);
+                // Dead letter: backend serialized an error into the stream
+                if (parsed && typeof parsed === "object" && parsed.error) {
+                  if (rafId !== null) cancelAnimationFrame(rafId);
+                  flush();
+                  reader.cancel();
+                  onError(parsed.error);
+                  return;
+                }
+                batchBuffer += typeof parsed === "string" ? parsed : payload;
               } catch {
                 // Non-JSON data line, append raw
                 batchBuffer += payload;
