@@ -6,6 +6,7 @@ import { TickerInput } from "@/components/TickerInput";
 import { DateRangeSelector } from "@/components/DateRangeSelector";
 import { ReportDisplay } from "@/components/ReportDisplay";
 import { streamStockReport } from "@/lib/api";
+import { toast } from "sonner";
 
 const Index = () => {
   const [tickers, setTickers] = useState<string[]>([]);
