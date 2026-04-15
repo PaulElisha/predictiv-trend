@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { Zap, BarChart3, Activity, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { TickerInput } from "@/components/TickerInput";
 import { DateRangeSelector } from "@/components/DateRangeSelector";
 import { ReportDisplay } from "@/components/ReportDisplay";
 import { streamStockReport } from "@/lib/api";
+import { toast } from "sonner";
 
 const Index = () => {
   const [tickers, setTickers] = useState<string[]>([]);
@@ -41,15 +42,25 @@ const Index = () => {
       (err) => {
         setError(err);
         setIsStreaming(false);
+        toast.error("Stream error", {
+          description: err,
+        });
       },
       abortRef.current.signal,
     );
   }, [tickers, startDate, endDate]);
 
-  const handleStop = () => {
+  const handleStop = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
-  };
+  }, []);
+
+  // Abort stream on unmount to trigger backend req.on('close')
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
