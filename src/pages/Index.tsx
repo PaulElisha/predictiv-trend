@@ -50,10 +50,17 @@ const Index = () => {
     );
   }, [tickers, startDate, endDate]);
 
-  const handleStop = () => {
+  const handleStop = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
-  };
+  }, []);
+
+  // Abort stream on unmount to trigger backend req.on('close')
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
