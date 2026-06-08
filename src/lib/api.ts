@@ -97,7 +97,23 @@ export async function streamStockReport(
                   onError(parsed.error);
                   return;
                 }
-                batchBuffer += typeof parsed === "string" ? parsed : payload;
+                // better-sse JSON.stringifies whatever is written to the session.
+                // When the backend pipes a Node stream, each chunk is a Buffer
+                // serialized as { type: "Buffer", data: [...] }. Decode it back.
+                if (
+                  parsed &&
+                  typeof parsed === "object" &&
+                  parsed.type === "Buffer" &&
+                  Array.isArray(parsed.data)
+                ) {
+                  batchBuffer += new TextDecoder().decode(
+                    new Uint8Array(parsed.data),
+                  );
+                } else if (typeof parsed === "string") {
+                  batchBuffer += parsed;
+                } else {
+                  batchBuffer += payload;
+                }
               } catch {
                 // Non-JSON data line, append raw
                 batchBuffer += payload;
